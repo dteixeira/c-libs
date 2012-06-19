@@ -1,16 +1,34 @@
-#include <stdio.h>
-#include <stdlib.h>
 #include "vector.h"
+#include <stdlib.h>
+
+typedef struct {
+	int size;
+	int capacity;
+	int cap_inc;
+	void ** elements;
+} _vector_private;
 
 // Vector specific method definitions
+int _vector_push_back(vector * vec, void * obj);
+int _vector_push_front(vector * vec, void *obj);
+int _vector_resize(vector * vec, int new_size);
+void * _vector_get(vector * vec, int index);
+void * _vector_remove(vector * vec, int index);
+void * _vector_pop_front(vector * vec);
+void * _vector_pop_back(vector * vec);
+void _vector_auto_cap_inc(vector * vec, int alloc);
+int _vector_size(vector * vec);
+int _vector_capacity(vector * vec);
 
 // Insert new element at the end of the vector
 int _vector_push_back(vector * vec, void * obj) 
 {
-	int res = 0;
-	if(vec->size >= vec->capacity)
-		res = vec->resize(vec, vec->capacity + vec->cap_inc);
-	vec->elements[vec->size++] = obj;
+	int res = 1;
+	_vector_private * real = (_vector_private *) vec->private; 
+	if(real->size >= real->capacity)
+		res = vec->resize(vec, real->capacity + real->cap_inc);
+	if(res)
+		real->elements[real->size++] = obj;
 	return res;
 }
 
@@ -23,14 +41,19 @@ int _vector_push_front(vector * vec, void *obj)
 // ones that don't fit in new array
 int _vector_resize(vector * vec, int new_size) 
 {
-	void ** ptr = (void **) realloc(vec->elements, new_size * sizeof(void *));
+	_vector_private * real = (_vector_private *) vec->private;
+	if(new_size < 0)
+		return 0;
+
+	// Reallocate vector
+	void ** ptr = (void **) realloc(real->elements, new_size * sizeof(void *));
 	if(!ptr)
 		return 0;
 	else
 	{
-		vec->capacity = new_size;
-		vec->size = vec->size < vec->capacity ? vec->size : vec->capacity;
-		vec->elements = ptr;
+		real->capacity = new_size;
+		real->size = real->size < real->capacity ? real->size : real->capacity;
+		real->elements = ptr;
 		return 1;
 	}
 }
@@ -38,6 +61,11 @@ int _vector_resize(vector * vec, int new_size)
 // Return the element in a given index
 void * _vector_get(vector * vec, int index) 
 {
+	_vector_private * real = (_vector_private *) vec->private;
+	if(index >= real->size || index < 0)
+		return (void *) NULL;
+	else
+		return (void *) real->elements[index];
 }
 
 // Remove the element in a given position;
@@ -56,23 +84,45 @@ void * _vector_pop_front(vector * vec)
 // element
 void * _vector_pop_back(vector * vec) 
 {
+	_vector_private * real = (_vector_private *) vec->private;
+	if(real->size <= 0)
+		return NULL;
+	else
+		return real->elements[--real->size];
 }
 
 // Set auto increment in capacity when push is
 // done
 void _vector_auto_cap_inc(vector * vec, int alloc) 
 {
-	vec->cap_inc = alloc;
+	alloc = alloc < 1 ? 1 : alloc;
+	_vector_private * real = (_vector_private *) vec->private;
+	real->cap_inc = alloc;
 }
 
+// Returns the vector current size (number of elements)
+int _vector_size(vector * vec)
+{
+	_vector_private * real = (_vector_private *) vec->private; 
+	return real->size;
+}
+
+// Returns the vector current capacity
+int _vector_capacity(vector * vec)
+{
+	_vector_private * real = (_vector_private *) vec->private; 
+	return real->capacity;
+}
 // Create a new array with given capacity
 vector * new_vector(int cap) 
 {
 	vector * vec = (vector *) malloc(sizeof(vector));
-	vec->size = 0;
-	vec->capacity = cap;
-	vec->elements = (void **) malloc(cap * sizeof(void *));
-	vec->cap_inc = 10;
+	_vector_private * real = (_vector_private *) malloc(sizeof(_vector_private));
+	real->size = 0;
+	real->capacity = cap;
+	real->elements = (void **) malloc(cap * sizeof(void *));
+	real->cap_inc = 10;
+	vec->private = (void *) real;
 
 	// Method bindings
 	vec->push_back = _vector_push_back;
@@ -83,6 +133,8 @@ vector * new_vector(int cap)
 	vec->pop_front = _vector_pop_front;
 	vec->pop_back = _vector_pop_back;
 	vec->set_cap_inc = _vector_auto_cap_inc;
+	vec->size = _vector_size;
+	vec->capacity = _vector_capacity;
 
 	return vec;
 }
