@@ -19,6 +19,9 @@ void * _vector_pop_back(vector * vec);
 void _vector_auto_cap_inc(vector * vec, int alloc);
 int _vector_size(vector * vec);
 int _vector_capacity(vector * vec);
+int _vector_swap(vector * vec, int p1, int p2);
+int _vector_insert(vector * vec, int index, void * obj);
+int _vector_put(vector * vec, int index, void * obj);
 
 // Insert new element at the end of the vector
 int _vector_push_back(vector * vec, void * obj) 
@@ -113,6 +116,25 @@ int _vector_capacity(vector * vec)
 	_vector_private * real = (_vector_private *) vec->private; 
 	return real->capacity;
 }
+
+// Swaps two elements of the vector; returns 0 on failure,
+// 1 otherwise
+int _vector_swap(vector * vec, int p1, int p2)
+{
+}
+
+// Inserts a new element in the given position; returns 0
+// on failure, 1 otherwise
+int _vector_insert(vector * vec, int index, void * obj)
+{
+}
+
+// Update value at the given position with the new object;
+// returns 0 on failure, 1 otherwise
+int _vector_put(vector * vec, int index, void * obj)
+{
+}
+
 // Create a new array with given capacity
 vector * new_vector(int cap) 
 {
@@ -135,6 +157,9 @@ vector * new_vector(int cap)
 	vec->set_cap_inc = _vector_auto_cap_inc;
 	vec->size = _vector_size;
 	vec->capacity = _vector_capacity;
+	vec->swap = _vector_swap;
+	vec->insert = _vector_insert;
+	vec->put = _vector_put;
 
 	return vec;
 }

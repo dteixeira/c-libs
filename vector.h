@@ -18,6 +18,9 @@ typedef struct vector
 	void (*set_cap_inc) (struct vector * vec, int alloc);
 	int (*size) (struct vector * vec);
 	int (*capacity) (struct vector * vec);
+	int (*swap) (struct vector * vec, int p1, int p2);
+	int (*insert) (struct vector * vec, int index, void * obj);
+	int (*put) (struct vector * vec, int index, void * obj);
 } vector;
 
 // Initialize a new vector
