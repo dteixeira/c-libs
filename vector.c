@@ -9,19 +9,19 @@ typedef struct {
 } _vector_private;
 
 // Vector specific method definitions
-int _vector_push_back(vector * vec, void * obj);
-int _vector_push_front(vector * vec, void *obj);
-int _vector_resize(vector * vec, int new_size);
-void * _vector_get(vector * vec, int index);
-void * _vector_remove(vector * vec, int index);
-void * _vector_pop_front(vector * vec);
-void * _vector_pop_back(vector * vec);
-void _vector_auto_cap_inc(vector * vec, int alloc);
-int _vector_size(vector * vec);
-int _vector_capacity(vector * vec);
-int _vector_swap(vector * vec, int p1, int p2);
-int _vector_insert(vector * vec, int index, void * obj);
-int _vector_put(vector * vec, int index, void * obj);
+static int _vector_push_back(vector * vec, void * obj);
+static int _vector_push_front(vector * vec, void *obj);
+static int _vector_resize(vector * vec, int new_size);
+static void * _vector_get(vector * vec, int index);
+static void * _vector_remove(vector * vec, int index);
+static void * _vector_pop_front(vector * vec);
+static void * _vector_pop_back(vector * vec);
+static void _vector_auto_cap_inc(vector * vec, int alloc);
+static int _vector_size(vector * vec);
+static int _vector_capacity(vector * vec);
+static int _vector_swap(vector * vec, int p1, int p2);
+static int _vector_insert(vector * vec, int index, void * obj);
+static int _vector_put(vector * vec, int index, void * obj);
 
 // Insert new element at the end of the vector
 int _vector_push_back(vector * vec, void * obj) 
@@ -38,6 +38,19 @@ int _vector_push_back(vector * vec, void * obj)
 // Insert new element at the start of the vector
 int _vector_push_front(vector * vec, void *obj) 
 {
+	int res = 1, i;
+	_vector_private * real = (_vector_private *) vec->private; 
+	if(real->size >= real->capacity)
+		res = vec->resize(vec, real->capacity + real->cap_inc);
+	if(res)
+	{
+		// TODO
+		for(i = 0; i < real->size - 1; ++i)
+		{
+
+		}
+	}
+	return res;
 }
 
 // Resize the vector; copies old values, ignoring
