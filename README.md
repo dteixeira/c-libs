@@ -1,6 +1,8 @@
 CLibs
 =====
 
+**This project was created as an academic exercise and is ABANDONED. The code contained in this project is in no way ready to be used in a real system, and is merely preserved as an interesting exercise.**
+
 Some useful libraries when programming C.
 
 Planned libraries at the moment are:
